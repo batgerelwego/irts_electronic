@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Электроник S.ECM201 — Ирц ба дүн</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap&subset=cyrillic,cyrillic-ext" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef2f6; --surface:#ffffff; --surface2:#f6f8fb; --ink:#14304d; --text:#1c2733; --muted:#5d6b7a;
+  --line:#d6dee7; --line2:#e7ecf2; --accent:#1f5f9e; --accentInk:#ffffff;
+  --P:#2c7a4b; --Pbg:#e3f2e8; --A:#b4382c; --Abg:#f8e2df; --L:#a86e12; --Lbg:#f8edd6; --E:#4a5f9c; --Ebg:#e4e8f5;
+  --warn:#b4382c; --shadow:0 1px 0 rgba(20,48,77,.06);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1722; --surface:#16212e; --surface2:#1b2836; --ink:#dbe7f3; --text:#dfe6ee; --muted:#93a3b4;
+    --line:#2b3a4b; --line2:#223040; --accent:#5b9ad8; --accentInk:#0b1520;
+    --P:#6cc28e; --Pbg:#1b3626; --A:#f08a7d; --Abg:#3d1f1c; --L:#e2b25a; --Lbg:#3a2e17; --E:#9aaee6; --Ebg:#232c47;
+    --warn:#f08a7d; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1722; --surface:#16212e; --surface2:#1b2836; --ink:#dbe7f3; --text:#dfe6ee; --muted:#93a3b4;
+  --line:#2b3a4b; --line2:#223040; --accent:#5b9ad8; --accentInk:#0b1520;
+  --P:#6cc28e; --Pbg:#1b3626; --A:#f08a7d; --Abg:#3d1f1c; --L:#e2b25a; --Lbg:#3a2e17; --E:#9aaee6; --Ebg:#232c47;
+  --warn:#f08a7d; --shadow:none;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{background:var(--paper);color:var(--text);font:15px/1.5 "IBM Plex Sans","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 18px 48px}
+
+/* header */
+header.top{background:var(--ink);color:var(--paper)}
+:root[data-theme="dark"] header.top{background:#0a111a;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) header.top{background:#0a111a;color:var(--ink)}}
+header.top .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:18px;flex-wrap:wrap}
+.course{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.course h1{margin:0;font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;font-weight:600;font-size:clamp(26px,4vw,38px);letter-spacing:-.01em;line-height:1}
+.course .code{font-size:15px;opacity:.75}
+.meta{font-size:13px;opacity:.8;margin-top:6px}
+.sync{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.9}
+.dot{width:8px;height:8px;border-radius:50%;background:#8fa3b8}
+.sync[data-s="ok"] .dot{background:#5fd18b}.sync[data-s="saving"] .dot{background:#f0c05a}.sync[data-s="err"] .dot{background:#ff7a6b}.sync[data-s="local"] .dot{background:#9bb3cc}
+.themebtn{background:transparent;border:1px solid currentColor;border-radius:6px;padding:2px 8px;cursor:pointer;opacity:.8;font-size:12px}
+
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
+nav.tabs button{background:none;border:0;padding:13px 14px 11px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;font-weight:500}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+/* controls */
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 14px}
+.bar .grow{flex:1}
+select,input[type=text],input[type=date],input[type=number],input[type=search]{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:7px 10px;min-height:36px}
+input[type=search]{min-width:200px}
+.btn{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:7px 13px;cursor:pointer;min-height:36px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accentInk);border-color:var(--accent)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.danger{color:var(--warn)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 12px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#0b1520}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0b1520}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.sectinfo{font-size:13px;color:var(--muted)}
+
+/* sessions strip */
+.sessions{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;cursor:pointer;text-align:left;line-height:1.25}
+.chip small{display:block;color:var(--muted);font-size:11px}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip.add{border-style:dashed;color:var(--accent);font-weight:600}
+
+.newsess{display:none;gap:8px;flex-wrap:wrap;align-items:center;padding:12px;margin-bottom:12px}
+.newsess.open{display:flex}
+
+/* counters */
+.counts{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin:4px 0 12px}
+.counts b{font-size:18px}
+.k-P{color:var(--P)}.k-A{color:var(--A)}.k-L{color:var(--L)}.k-E{color:var(--E)}
+
+/* roll call list */
+.roll{list-style:none;margin:0;padding:0}
+.roll li{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line2)}
+.roll li:first-child{border-top:0}
+.roll .no{color:var(--muted);font-size:13px;text-align:right}
+.roll .nm{font-weight:500}
+.roll .cd{display:block;font-size:12px;color:var(--muted)}
+.marks{display:flex;gap:4px}
+.mk{width:40px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600;color:var(--muted)}
+.mk[data-m="P"][aria-pressed="true"]{background:var(--Pbg);color:var(--P);border-color:var(--P)}
+.mk[data-m="A"][aria-pressed="true"]{background:var(--Abg);color:var(--A);border-color:var(--A)}
+.mk[data-m="L"][aria-pressed="true"]{background:var(--Lbg);color:var(--L);border-color:var(--L)}
+.mk[data-m="E"][aria-pressed="true"]{background:var(--Ebg);color:var(--E);border-color:var(--E)}
+.roll li[data-m="A"]{background:color-mix(in srgb,var(--Abg) 45%,transparent)}
+@media (max-width:560px){.roll li{grid-template-columns:26px 1fr}.marks{grid-column:1/-1;justify-content:flex-end}.mk{width:100%;max-width:70px}}
+
+/* tables */
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13.5px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--surface2);font-weight:600;color:var(--ink);text-align:left;z-index:2;font-size:12.5px;vertical-align:bottom}
+th.num,td.num{text-align:right}
+td.c{text-align:center}
+.stick{position:sticky;left:0;background:var(--surface);z-index:1}
+thead .stick{z-index:3;background:var(--surface2)}
+tbody tr:hover td{background:var(--surface2)}
+tbody tr:hover td.stick{background:var(--surface2)}
+.cell{width:30px;height:28px;border-radius:5px;border:1px solid var(--line2);background:transparent;cursor:pointer;font-weight:600;font-size:12px;padding:0}
+.cell[data-m="P"]{background:var(--Pbg);color:var(--P);border-color:transparent}
+.cell[data-m="A"]{background:var(--Abg);color:var(--A);border-color:transparent}
+.cell[data-m="L"]{background:var(--Lbg);color:var(--L);border-color:transparent}
+.cell[data-m="E"]{background:var(--Ebg);color:var(--E);border-color:transparent}
+.sc{width:58px;text-align:right;padding:4px 6px;min-height:30px;border-radius:5px}
+input.sc::-webkit-inner-spin-button,input.sc::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input.sc{-moz-appearance:textfield;appearance:textfield}
+.sc.over{border-color:var(--warn);color:var(--warn)}
+.sc.auto{background:var(--surface2);color:var(--muted)}
+.sc.ovr{border-color:var(--accent)}
+.tot{font-weight:600}
+.grade{display:inline-block;min-width:28px;text-align:center;border-radius:5px;padding:1px 6px;font-weight:700}
+.g-A{background:var(--Pbg);color:var(--P)}.g-B{background:#e1edf9;color:#1f5f9e}.g-C{background:var(--Lbg);color:var(--L)}.g-D{background:var(--Ebg);color:var(--E)}.g-F{background:var(--Abg);color:var(--A)}
+:root[data-theme="dark"] .g-B{background:#1c2f45;color:#8dbdf0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .g-B{background:#1c2f45;color:#8dbdf0}}
+.pct-low{color:var(--A);font-weight:600}
+.flag{font-size:11px;color:var(--warn);display:block}
+tfoot td{background:var(--surface2);font-weight:600;position:sticky;bottom:0}
+
+/* overview */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{padding:14px 16px}
+.card h3{margin:0 0 2px;font-size:15px;color:var(--ink)}
+.card .big{font-size:30px;font-weight:600;color:var(--ink);line-height:1.1;margin-top:8px}
+.meter{height:6px;background:var(--line2);border-radius:3px;overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;background:var(--accent)}
+h2{font-size:18px;color:var(--ink);margin:26px 0 10px}
+.dist{display:flex;align-items:flex-end;gap:14px;height:150px;padding:16px 18px 0}
+.dist div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;font-size:13px}
+.dist span.b{width:100%;max-width:64px;border-radius:5px 5px 0 0}
+.dist label{padding:6px 0 10px;font-weight:700}
+
+.empty{padding:36px 18px;text-align:center;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.toast.show{opacity:1}
+.settings{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:18px}
+.settings .panel{padding:16px}
+.settings h3{margin:0 0 10px;font-size:15px;color:var(--ink)}
+.comp{display:grid;grid-template-columns:1fr 70px auto;gap:6px;align-items:center;margin-bottom:6px}
+.comp .tag{font-size:11px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="course"><h1>Электроник</h1><span class="code">S.ECM201</span></div>
+      <div class="meta">Багш Т.Батгэрэл (M.EC21) · ШУТИС, Эрчим хүчний сургууль</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="sync" id="sync" data-s="local"><span class="dot"></span><span id="syncTxt">Ачаалж байна…</span></div>
+      <button class="themebtn" id="themeBtn" title="Өнгөний горим">◐</button>
+    </div>
+  </div>
+</header>
+<nav class="tabs" role="tablist">
+  <div class="wrap">
+    <button role="tab" data-tab="att" aria-selected="true">Ирц</button>
+    <button role="tab" data-tab="grades" aria-selected="false">Дүн</button>
+    <button role="tab" data-tab="overview" aria-selected="false">Тойм</button>
+    <button role="tab" data-tab="settings" aria-selected="false">Тохиргоо</button>
+  </div>
+</nav>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+const ROSTER = {"students":[{"c":"B211020087","n":"Б.АНУДАРЬ","s":"ЭХИС"},{"c":"B211050022","n":"Б.ЁНДОНЖАМЦ","s":"ГУУС"},{"c":"B222190018","n":"Ж.МӨНХТУЯА","s":"ЭХИС"},{"c":"B222760023","n":"Л.ГОМБО","s":"ГУУС"},{"c":"B222760024","n":"Н.ХОСБАЯР","s":"ГУУС"},{"c":"B232100025","n":"Ж.БИЛГҮҮН-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B232180008","n":"Б.ДӨЛГӨӨН","s":"ЭХИС"},{"c":"B232190004","n":"З.ӨНӨРБАЯР","s":"ЭХИС"},{"c":"B232190009","n":"Б.ӨЛЗИЙСАЙХАН","s":"ЭХИС"},{"c":"B232190065","n":"Х.ТЭМҮҮЛЭН","s":"ЭХИС"},{"c":"B232190087","n":"А.ПҮРЭВБААТАР","s":"ЭХИС"},{"c":"B232760001","n":"Б.ЭНХБАТ","s":"ГУУС"},{"c":"B232760004","n":"Б.ДӨЛГӨӨН","s":"ГУУС"},{"c":"B232760008","n":"С.БЭЛГҮДЭЙ","s":"ГУУС"},{"c":"B242100047","n":"О.БАТТҮВШИН","s":"ЭХИС"},{"c":"B242180011","n":"П.ДОРЖЗОДОВ","s":"ЭХИС"},{"c":"B242180073","n":"Б.БАТЗОРИГ","s":"ЭХИС"},{"c":"B242190004","n":"М.ЗАНДАНШАТАР","s":"ЭХИС"},{"c":"B242190010","n":"Н.ӨСӨХБАЯР","s":"ЭХИС"},{"c":"B242190017","n":"Д.ДАМДИНДОРЖ","s":"ЭХИС"},{"c":"B242190022","n":"Г.АНУ","s":"ЭХИС"},{"c":"B242190041","n":"П.ТӨГССАРУУЛ","s":"ЭХИС"},{"c":"B242190055","n":"Б.ДАГВАДОРЖ","s":"ЭХИС"},{"c":"B242190059","n":"Г.ЧИНЗОРИГ","s":"ЭХИС"},{"c":"B242190066","n":"Н.ӨСӨХ-ИРЭЭДҮЙ","s":"ЭХИС"},{"c":"B242190071","n":"Б.УУГАНБАЯР","s":"ЭХИС"},{"c":"B242760009","n":"О.ЦОГТСАЙХАН","s":"ГУУС"},{"c":"B252100003","n":"Б.ТЭМҮҮЛЭН","s":"ЭХИС"},{"c":"B252100006","n":"Б.МӨНХБААТАР","s":"ЭХИС"},{"c":"B252100014","n":"Э.АНАР","s":"ЭХИС"},{"c":"B252100015","n":"Л.МӨНХ-ОРГИЛ","s":"ЭХИС"},{"c":"B252100016","n":"Д.БАЯРМАГНАЙ","s":"ЭХИС"},{"c":"B252100019","n":"М.АМАРХҮҮ","s":"ЭХИС"},{"c":"B252100021","n":"О.ЭНХЗАЯА","s":"ЭХИС"},{"c":"B252100025","n":"А.МӨНХБИЛИГ","s":"ЭХИС"},{"c":"B252100026","n":"У.МӨНХДОЛГОР","s":"ЭХИС"},{"c":"B252100029","n":"Э.ТЭМҮҮЛЭН","s":"ЭХИС"},{"c":"B252100032","n":"Д.МЯГМАРДАШ","s":"ЭХИС"},{"c":"B252100033","n":"М.ГАН-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252100034","n":"Б.АМИРЛАН","s":"ЭХИС"},{"c":"B252100035","n":"Э.АНДХҮҮ","s":"ЭХИС"},{"c":"B252100041","n":"Г.ГАНТОГТОХ","s":"ЭХИС"},{"c":"B252100044","n":"Э.МИШЭЭЛ","s":"ЭХИС"},{"c":"B252100045","n":"Г.ГАНТӨГС","s":"ЭХИС"},{"c":"B252100047","n":"Б.НЯМДЭЛГЭР","s":"ЭХИС"},{"c":"B252100048","n":"Н.АЗЖАРГАЛ","s":"ЭХИС"},{"c":"B252100049","n":"Б.ӨНӨБОЛД","s":"ЭХИС"},{"c":"B252100050","n":"Д.ШАНЬХҮҮ","s":"ЭХИС"},{"c":"B252100052","n":"Э.АЛТАНЗУЛ","s":"ЭХИС"},{"c":"B252100055","n":"Г.ГАНБАЯР","s":"ЭХИС"},{"c":"B252100058","n":"Х.УУГАНБАЯР","s":"ЭХИС"},{"c":"B252100062","n":"З.БАСАНЖАВ","s":"ЭХИС"},{"c":"B252100065","n":"Г.ӨСӨХБАЯР","s":"ЭХИС"},{"c":"B252100069","n":"Э.УНДРАХ","s":"ЭХИС"},{"c":"B252100072","n":"Ц.СҮХБАТ","s":"ЭХИС"},{"c":"B252100077","n":"Х.НАЦАГДОРЖ","s":"ЭХИС"},{"c":"B252100088","n":"Ц.АМГАЛАН","s":"ЭХИС"},{"c":"B252100089","n":"Б.ТӨМӨР-ОЧИР","s":"ЭХИС"},{"c":"B252100090","n":"Б.ТУЛГА","s":"ЭХИС"},{"c":"B252101005","n":"М.НАРАНСОЛОНГО","s":"ЭХИС"},{"c":"B252101006","n":"З.ДӨЛГӨӨН","s":"ЭХИС"},{"c":"B252101007","n":"О.ЭНХХҮСЛЭН","s":"ЭХИС"},{"c":"B252101010","n":"Б.СУМЪЯАБАЗАР","s":"ЭХИС"},{"c":"B252101014","n":"Ө.ЦАЦРАЛ","s":"ЭХИС"},{"c":"B252101015","n":"З.ЗАМИЛАН","s":"ЭХИС"},{"c":"B252101016","n":"Ц.БИЛГҮҮН","s":"ЭХИС"},{"c":"B252101017","n":"С.ХҮЛЭГ","s":"ЭХИС"},{"c":"B252101018","n":"Б.ЕСӨНБИЛЭГ","s":"ЭХИС"},{"c":"B252101024","n":"М.БАТМӨНХ","s":"ЭХИС"},{"c":"B252101025","n":"Г.БЯМБАДУГАР","s":"ЭХИС"},{"c":"B252101026","n":"П.ХАТАНБААТАР","s":"ЭХИС"},{"c":"B252101027","n":"Ц.НАРАНГЭРЭЛ","s":"ЭХИС"},{"c":"B252101029","n":"Г.ТӨГӨЛДӨР","s":"ЭХИС"},{"c":"B252101030","n":"Х.ЗАЯА","s":"ЭХИС"},{"c":"B252180002","n":"М.МӨНХСАРАН","s":"ЭХИС"},{"c":"B252180005","n":"Г.ЗОЛБООТ","s":"ЭХИС"},{"c":"B252180006","n":"Ц.БОЛОРТУЯА","s":"ЭХИС"},{"c":"B252180010","n":"Г.ГАНСУВД","s":"ЭХИС"},{"c":"B252180011","n":"Г.ХОСБАЯР","s":"ЭХИС"},{"c":"B252180012","n":"Б.АНАР","s":"ЭХИС"},{"c":"B252180013","n":"Б.ДЭЛГЭРМӨРӨН","s":"ЭХИС"},{"c":"B252180017","n":"У.МИШЭЭЛ","s":"ЭХИС"},{"c":"B252180020","n":"Ц.ТЭНГИС","s":"ЭХИС"},{"c":"B252180027","n":"Э.ӨЛЗИЙБУЯН","s":"ЭХИС"},{"c":"B252180028","n":"Б.ХАЛИУН","s":"ЭХИС"},{"c":"B252180032","n":"Б.ЭНХСАЙХАН","s":"ЭХИС"},{"c":"B252180035","n":"Ж.БУЛГАНТАМИР","s":"ЭХИС"},{"c":"B252180037","n":"А.ХИШИГДОРЖ","s":"ЭХИС"},{"c":"B252180041","n":"Д.ДАЛАЙЖАРГАЛ","s":"ЭХИС"},{"c":"B252180043","n":"Б.АЛТАНХҮҮ","s":"ЭХИС"},{"c":"B252180046","n":"К.БЕЙБАРЫС","s":"ЭХИС"},{"c":"B252180051","n":"Ц.ЗОЛЖАРГАЛ","s":"ЭХИС"},{"c":"B252180055","n":"С.МАГСАРБАТ","s":"ЭХИС"},{"c":"B252180061","n":"Э.АМИН-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252180062","n":"О.АНХБАЯР","s":"ЭХИС"},{"c":"B252180063","n":"Б.ХИШИГБАЯР","s":"ЭХИС"},{"c":"B252180072","n":"Г.БОЛОРТУЯА","s":"ЭХИС"},{"c":"B252180073","n":"Х.ЖАНБОЛОТ","s":"ЭХИС"},{"c":"B252180082","n":"Б.АЗЖАРГАЛ","s":"ЭХИС"},{"c":"B252180084","n":"А.ГАН-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252180085","n":"Г.ЧОЙЖИЛСҮРЭН","s":"ЭХИС"},{"c":"B252180102","n":"Г.ЭНЭРЭЛ","s":"ЭХИС"},{"c":"B252180103","n":"Б.ЭНХЖАРГАЛ","s":"ЭХИС"},{"c":"B252180109","n":"А.ЭНХМӨНХ","s":"ЭХИС"},{"c":"B252180110","n":"Ч.ДАШНЯМ","s":"ЭХИС"},{"c":"B252180112","n":"Ө.ӨЛЗИЙЖАРГАЛ","s":"ЭХИС"},{"c":"B252180117","n":"Г.АЗЖАРГАЛ","s":"ЭХИС"},{"c":"B252180120","n":"Б.РИМИД","s":"ЭХИС"},{"c":"B252180126","n":"Т.ДОРЖСАМБУУ","s":"ЭХИС"},{"c":"B252180130","n":"А.ХҮЛГЭН","s":"ЭХИС"},{"c":"B252180134","n":"Г.МАРГАД-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252180135","n":"Ө.ОЮУНЖАРГАЛ","s":"ЭХИС"},{"c":"B252180139","n":"Б.НАРАНХҮҮ","s":"ЭХИС"},{"c":"B252180143","n":"С.ЖАРХАНБЕК","s":"ЭХИС"},{"c":"B252180146","n":"М.АНУЖИН","s":"ЭХИС"},{"c":"B252180147","n":"О.ХАЛИУНАА","s":"ЭХИС"},{"c":"B252190001","n":"О.РЭВГИЙЖАЛБУУ","s":"ЭХИС"},{"c":"B252190002","n":"Х.ЭНХМӨРӨН","s":"ЭХИС"},{"c":"B252190013","n":"М.УРАНБИЛЭГ","s":"ЭХИС"},{"c":"B252190018","n":"Л.АНАР","s":"ЭХИС"},{"c":"B252190022","n":"У.АНУЖИН","s":"ЭХИС"},{"c":"B252190023","n":"Ж.БАДРАХ","s":"ЭХИС"},{"c":"B252190029","n":"Г.ДОРЖДАВГА","s":"ЭХИС"},{"c":"B252190030","n":"А.ЗУЛ","s":"ЭХИС"},{"c":"B252190042","n":"Б.НОМИНЧУЛУУН","s":"ЭХИС"},{"c":"B252190051","n":"Э.ЦОГ-УЧРАЛ","s":"ЭХИС"},{"c":"B252190052","n":"Б.АНУУЖИН","s":"ЭХИС"},{"c":"B252190058","n":"Д.ТЭГШЖАРГАЛ","s":"ЭХИС"},{"c":"B252190060","n":"М.ГАНТУЛГА","s":"ЭХИС"},{"c":"B252190061","n":"Г.ДАРХАНБААТАР","s":"ЭХИС"},{"c":"B252190066","n":"Ж.МӨНХБАЯСГАЛАН","s":"ЭХИС"},{"c":"B252190070","n":"Э.ПҮРЭВДАВАА","s":"ЭХИС"},{"c":"B252190071","n":"С.БАЛЖИННЯМ","s":"ЭХИС"},{"c":"B252190075","n":"Б.ХАШ-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252190078","n":"Ү.ГАНСҮХ","s":"ЭХИС"},{"c":"B252190085","n":"Г.ГАН-ЭРДЭНЭ","s":"ЭХИС"},{"c":"B252760001","n":"Б.ГАН-ОЧИР","s":"ГУУС"},{"c":"B252760002","n":"А.ЗӨНБИЛЭГ","s":"ГУУС"},{"c":"B252760003","n":"Б.ДАВАА","s":"ГУУС"},{"c":"B252760006","n":"Б.ДАШНЯМ","s":"ГУУС"},{"c":"B252760007","n":"С.СОДБАЯР","s":"ГУУС"},{"c":"B252760008","n":"Б.ТЭМҮҮЛЭН","s":"ГУУС"},{"c":"B252760009","n":"Б.БАТЖАРГАЛ","s":"ГУУС"},{"c":"B252760010","n":"Б.ЧУЛУУНЗАГД","s":"ГУУС"},{"c":"B252760012","n":"Б.ТӨГӨЛДӨР","s":"ГУУС"},{"c":"B252760013","n":"Д.БАЯРМАГНАЙ","s":"ГУУС"},{"c":"B252760016","n":"Б.БАТ-ОРГИЛ","s":"ГУУС"},{"c":"B252760025","n":"З.ХАШЧУЛУУН","s":"ГУУС"},{"c":"B262100027","n":"Х.ЦОЛМОНГЭРЭЛ","s":"ЭХИС"}],"sections":[{"id":"lec","kind":"Лекц","name":"Лекц","time":"","room":"","list":["B222760023","B222760024","B232760004","B232760008","B242180011","B242180073","B242190004","B242190041","B242190055","B242190066","B242190071","B242760009","B252100006","B252100016","B252100019","B252100021","B252100025","B252100026","B252100029","B252100033","B252100034","B252100035","B252100045","B252100047","B252100048","B252100050","B252100052","B252100062","B252100065","B252100077","B252100088","B252101006","B252101007","B252101010","B252101014","B252101015","B252101016","B252101017","B252101018","B252101024","B252101026","B252101027","B252101030","B252180002","B252180006","B252180010","B252180013","B252180055","B252180073","B252180084","B252180085","B252180102","B252180103","B252180110","B252180117","B252180120","B252180126","B252180134","B252180139","B252180143","B252180147","B252190013","B252190018","B252190029","B252190061","B252190071","B252190078","B252760003","B252760007","B252760009","B252760010","B252760012","B252760013","B252760016","B252760025"]},{"id":"sem-s","kind":"Семинар","name":"Семинар · сондгой","time":"4-4-р пар (сондгой долоо хоног)","room":"2-422","list":["B232760001","B232760004","B252760007","B252760016","B242100047","B242180011","B242190022","B242190041","B242190059","B242190066","B252100016","B252100019","B252100044","B252100045","B252100047","B252100048","B252100052","B252100055","B252100058","B252100062","B252100089","B252101006","B252101007","B252101014","B252101015","B252101025","B252101026","B252180002","B252180017","B252180028","B252180037","B252180046","B252180051","B252180061","B252180103","B252180112","B252180126","B252180135","B252180139","B252180146","B252190001","B252190013","B252190018","B252190023","B252190030","B252190052","B252190058","B252190066","B252190070"]},{"id":"sem-t","kind":"Семинар","name":"Семинар · тэгш","time":"4-4-р пар (тэгш долоо хоног)","room":"2-422","list":["B211050022","B222760023","B242760009","B252760003","B252760006","B252760008","B252760010","B252760012","B252760025","B232100025","B232180008","B232190004","B232190009","B232190087","B242180073","B242190010","B242190055","B252100021","B252100026","B252100034","B252100035","B252100049","B252100050","B252100069","B252100088","B252100090","B252101005","B252101010","B252101016","B252101017","B252101024","B252101027","B252101030","B252180006","B252180013","B252180035","B252180073","B252180102","B252180120","B252180130","B252180134","B252180147","B252190002","B252190022","B252190029","B252190042","B252190051","B252190061"]},{"id":"lab-s","kind":"Лаборатори","name":"Лаборатори · сондгой","time":"4-5, 4-6-р пар (сондгой)","room":"2-318","list":["B211020087","B222190018","B242190017","B252100003","B252100014","B252100015","B252100032","B252100034","B252100041","B252100072","B252180011","B252180020","B252180027","B252180032","B252180041","B252180043","B252180062","B252180082","B252180103","B252180126","B252180135","B252180139","B252190060","B252190085"]},{"id":"lab-t","kind":"Лаборатори","name":"Лаборатори · тэгш","time":"4-5, 4-6-р пар (тэгш)","room":"2-318","list":["B252760001","B252760002","B252760006","B252760012","B252760016","B252760025","B232190004","B232190009","B232190065","B242190022","B252100045","B252101018","B252101027","B252101029","B252180005","B252180012","B252180028","B252180063","B252180072","B252180109","B252180143","B252190075","B262100027"]}]};
+const ST = Object.fromEntries(ROSTER.students.map(s => [s.c, s]));
+const SECS = ROSTER.sections;
+const SEC = Object.fromEntries(SECS.map(s => [s.id, s]));
+const MEMBERSHIP = {}; // code -> [secId]
+SECS.forEach(s => s.list.forEach(c => (MEMBERSHIP[c] ||= []).push(s.id)));
+
+const MARKS = { P: { l: "✓", n: "Ирсэн" }, L: { l: "Х", n: "Хоцорсон" }, E: { l: "Ч", n: "Чөлөөтэй" }, A: { l: "Т", n: "Тасалсан" } };
+const CYCLE = ["", "P", "A", "L", "E"];
+const DEFAULT_CONFIG = {
+  components: [
+    { id: "t1", name: "Сорил 1", max: 10 },
+    { id: "t2", name: "Сорил 2", max: 10 },
+    { id: "l1", name: "Лаб 1", max: 5 },
+    { id: "l2", name: "Лаб 2", max: 5 },
+    { id: "l3", name: "Лаб 3", max: 5 },
+    { id: "l4", name: "Лаб 4", max: 5 },
+    { id: "sem", name: "Семинар", max: 8 },
+    { id: "bd1", name: "Бие даалт 1", max: 6 },
+    { id: "bd2", name: "Бие даалт 2", max: 10 },
+    { id: "att", name: "Ирц, идэвх", max: 6, auto: true },
+    { id: "exam", name: "Шалгалт", max: 30, exam: true }
+  ],
+  lateWeight: 0.5,
+  examMin: 0,
+  scale: [["A", 90], ["B", 80], ["C", 70], ["D", 60], ["F", 0]]
+};
+
+/* ---------- state & storage ---------- */
+const KEYS = ["reg/config", "reg/scores", ...SECS.map(s => "att/" + s.id)];
+const D = {}; // key -> local doc body
+KEYS.forEach(k => D[k] = k === "reg/config" ? { config: clone(DEFAULT_CONFIG) } : k === "reg/scores" ? { s: {} } : { sess: {}, m: {} });
+const st = { db: null, pend: {}, full: {}, timers: {}, busy: {}, exists: {}, first: {} };
+
+function clone(x) { return x == null ? x : JSON.parse(JSON.stringify(x)); }
+function isObj(x) { return x && typeof x === "object" && !Array.isArray(x); }
+function merge(t, s) { for (const k in s) { if (isObj(s[k]) && isObj(t[k])) merge(t[k], s[k]); else t[k] = clone(s[k]); } return t; }
+const LS = "secm201:";
+function cacheGet(k) { try { const v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function cacheSet(k) { try { localStorage.setItem(LS + k, JSON.stringify(D[k])); } catch (e) { } }
+KEYS.forEach(k => { const c = cacheGet(k); if (c) D[k] = c; });
+if (!D["reg/config"].config) D["reg/config"].config = clone(DEFAULT_CONFIG);
+
+const cfg = () => D["reg/config"].config;
+const scores = () => D["reg/scores"].s;
+const attDoc = id => D["att/" + id];
+
+function setSync(s, t) { const el = document.getElementById("sync"); el.dataset.s = s; document.getElementById("syncTxt").textContent = t; }
+function refreshSync() {
+  if (!st.db) return setSync("local", "Зөвхөн энэ төхөөрөмжид");
+  const busy = Object.keys(st.pend).length || Object.values(st.busy).some(Boolean);
+  setSync(busy ? "saving" : "ok", busy ? "Хадгалж байна…" : "Хадгалагдсан");
+}
+
+function patch(key, p) {
+  merge(D[key], p); cacheSet(key);
+  st.pend[key] = merge(st.pend[key] || {}, p);
+  queue(key);
+}
+function replaceDoc(key, body) {
+  D[key] = body; cacheSet(key); st.full[key] = true; st.pend[key] = st.pend[key] || {}; queue(key);
+}
+function queue(key) {
+  clearTimeout(st.timers[key]);
+  refreshSync();
+  st.timers[key] = setTimeout(() => flush(key), 700);
+}
+async function flush(key, retried) {
+  if (!st.db) { delete st.pend[key]; st.full[key] = false; refreshSync(); return; }
+  if (st.busy[key]) { st.timers[key] = setTimeout(() => flush(key), 400); return; }
+  const p = st.pend[key]; if (!p) return refreshSync();
+  const full = st.full[key] || !st.exists[key];
+  delete st.pend[key]; st.full[key] = false; st.busy[key] = true; refreshSync();
+  try {
+    const ref = st.db.doc(key);
+    if (full) await ref.set(clone(D[key])); else await ref.update(p);
+    st.exists[key] = true;
+  } catch (e) {
+    if (e && e.code === "invalid_argument" && !full) { st.exists[key] = false; st.pend[key] = {}; st.full[key] = true; }
+    else if (e && e.code === "unavailable" && !retried) { st.pend[key] = merge(p, st.pend[key] || {}); st.busy[key] = false; setTimeout(() => flush(key, true), 800 + Math.random() * 800); return; }
+    else { st.busy[key] = false; setSync("err", "Хадгалж чадсангүй — энэ төхөөрөмжид үлдлээ"); return; }
+  }
+  st.busy[key] = false;
+  if (st.pend[key]) flush(key); else refreshSync();
+}
+
+async function initDb() {
+  if (!window.claude || !window.claude.use) { refreshSync(); return; }
+  let db = null;
+  try { db = await window.claude.use("db"); } catch (e) { db = null; }
+  if (!db) { refreshSync(); return; }
+  st.db = db; refreshSync();
+  KEYS.forEach(key => {
+    st.first[key] = true;
+    db.doc(key).onSnapshot(snap => {
+      st.exists[key] = snap.exists;
+      const first = st.first[key]; st.first[key] = false;
+      if (st.pend[key] || st.busy[key] || snap.metadata.hasPendingWrites) return;
+      if (snap.exists) {
+        const body = clone(snap.data());
+        if (key === "reg/config" && !body.config) body.config = clone(DEFAULT_CONFIG);
+        D[key] = body; cacheSet(key); softRender();
+      } else if (first && hasContent(key)) {
+        st.full[key] = true; st.pend[key] = {}; queue(key); // push local cache up
+      }
+    }, () => setSync("err", "Холболт тасарлаа — дахин ачаална уу"));
+  });
+}
+function hasContent(key) {
+  const d = D[key];
+  if (key === "reg/config") return JSON.stringify(d.config) !== JSON.stringify(DEFAULT_CONFIG);
+  if (key === "reg/scores") return Object.keys(d.s || {}).length > 0;
+  return Object.keys(d.sess || {}).length > 0;
+}
+
+/* ---------- computations ---------- */
+function sessions(secId) {
+  const d = attDoc(secId);
+  return Object.entries(d.sess || {}).filter(([, v]) => v).map(([id, v]) => ({ id, ...v })).sort((a, b) => (a.d || "").localeCompare(b.d || "") || a.id.localeCompare(b.id));
+}
+function mark(secId, sid, code) { const m = attDoc(secId).m || {}; return (m[sid] && m[sid][code]) || ""; }
+function attStats(code, secIds) {
+  const r = { P: 0, A: 0, L: 0, E: 0, n: 0 };
+  (secIds || MEMBERSHIP[code] || []).forEach(sec => sessions(sec).forEach(s => { const m = mark(sec, s.id, code); if (m) { r[m]++; } r.n++; }));
+  const base = r.P + r.A + r.L;
+  r.rate = base ? (r.P + r.L * (cfg().lateWeight ?? 0.5)) / base : null;
+  return r;
+}
+function compVal(code, c) {
+  const v = (scores()[code] || {})[c.id];
+  if (v !== undefined && v !== null && v !== "") return { v: +v, ovr: !!c.auto };
+  if (c.auto) { const r = attStats(code).rate; return { v: r == null ? null : Math.round(r * c.max * 10) / 10, auto: true }; }
+  return { v: null };
+}
+function totals(code) {
+  let cont = 0, exam = 0, any = false;
+  cfg().components.forEach(c => { const { v } = compVal(code, c); if (v != null) { any = true; if (c.exam) exam += v; else cont += v; } });
+  const total = Math.round((cont + exam) * 10) / 10;
+  return { cont: Math.round(cont * 10) / 10, exam, total, any, letter: any ? letter(total) : "" };
+}
+function letter(t) { for (const [g, min] of cfg().scale) if (t >= min) return g; return "F"; }
+function maxCont() { return cfg().components.filter(c => !c.exam).reduce((a, c) => a + (+c.max || 0), 0); }
+function maxAll() { return cfg().components.reduce((a, c) => a + (+c.max || 0), 0); }
+const fmt = v => v == null ? "" : (Math.round(v * 10) / 10).toString();
+const pct = r => r == null ? "—" : Math.round(r * 100) + "%";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const shortDate = d => d ? d.slice(5).replace("-", "/") : "";
+function toast(t) { const el = document.getElementById("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
+function matches(code, q) { if (!q) return true; q = q.toLowerCase(); const s = ST[code]; return s.c.toLowerCase().includes(q) || s.n.toLowerCase().includes(q); }
+
+/* ---------- UI state ---------- */
+const ui = { tab: "att", sec: "lec", sess: null, view: "roll", q: "", gsec: "all", gq: "", newOpen: false };
+try { Object.assign(ui, JSON.parse(localStorage.getItem(LS + "ui") || "{}")); } catch (e) { }
+function saveUi() { try { localStorage.setItem(LS + "ui", JSON.stringify({ tab: ui.tab, sec: ui.sec, view: ui.view, gsec: ui.gsec })); } catch (e) { } }
+
+const main = document.getElementById("main");
+function render() {
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === ui.tab));
+  ({ att: renderAtt, grades: renderGrades, overview: renderOverview, settings: renderSettings })[ui.tab]();
+  saveUi();
+}
+let softPending = false;
+function softRender() {
+  const a = document.activeElement;
+  if (a && main.contains(a) && (a.matches("input[type=number],input[type=text]"))) { softPending = true; return; }
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+}
+document.addEventListener("focusout", () => { if (softPending) { softPending = false; setTimeout(softRender, 50); } });
+document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; render(); });
+
+/* ---------- Attendance ---------- */
+function secOptions(sel, withAll) {
+  return (withAll ? `<option value="all"${sel === "all" ? " selected" : ""}>Бүх оюутан (${ROSTER.students.length})</option>` : "") +
+    SECS.map(s => `<option value="${s.id}"${s.id === sel ? " selected" : ""}>${esc(s.name)} (${s.list.length})</option>`).join("");
+}
+function renderAtt() {
+  const sec = SEC[ui.sec] || SECS[0]; ui.sec = sec.id;
+  const ss = sessions(sec.id);
+  if (ui.sess && !ss.find(s => s.id === ui.sess)) ui.sess = null;
+  if (!ui.sess && ss.length) ui.sess = ss[ss.length - 1].id;
+  const info = [sec.kind, sec.time, sec.room && ("танхим " + sec.room)].filter(Boolean).join(" · ");
+  let h = `<div class="bar">
+    <select id="secSel" aria-label="Анги">${secOptions(sec.id)}</select>
+    <span class="sectinfo grow">${esc(info)}</span>
+    <div class="seg" role="group" aria-label="Харагдац">
+      <button data-v="roll" aria-pressed="${ui.view === "roll"}">Нэг хичээл</button>
+      <button data-v="grid" aria-pressed="${ui.view === "grid"}">Нийт хүснэгт</button>
+    </div></div>`;
+  h += `<div class="sessions">` + ss.map((s, i) => `<button class="chip" data-s="${s.id}" aria-pressed="${s.id === ui.sess && ui.view === "roll"}">${i + 1}-р хичээл<small>${esc(shortDate(s.d))}${s.t ? " · " + esc(s.t) : ""}</small></button>`).join("") +
+    `<button class="chip add" id="addSess">+ Хичээл нэмэх<small>${esc(shortDate(today()))}</small></button></div>`;
+  h += `<div class="panel newsess${ui.newOpen ? " open" : ""}" id="newSess">
+      <label>Огноо <input type="date" id="nsDate" value="${today()}"></label>
+      <input type="text" id="nsTopic" placeholder="Сэдэв (заавал биш)" style="flex:1;min-width:180px">
+      <button class="btn primary" id="nsOk">Хичээл үүсгэх</button>
+      <button class="btn ghost" id="nsCancel">Болих</button></div>`;
+  if (!ss.length) {
+    h += `<div class="panel empty">Энэ ангид бүртгэсэн хичээл алга.<br>Дээрх «+ Хичээл нэмэх» товчоор өнөөдрийн хичээлийг үүсгээд ирц бүртгэнэ үү.</div>`;
+  } else if (ui.view === "roll") h += rollHtml(sec, ss);
+  else h += gridHtml(sec, ss);
+  main.innerHTML = h;
+  bindAtt(sec, ss);
+}
+function rollHtml(sec, ss) {
+  const s = ss.find(x => x.id === ui.sess); const idx = ss.indexOf(s);
+  const c = { P: 0, A: 0, L: 0, E: 0, "": 0 };
+  sec.list.forEach(code => c[mark(sec.id, s.id, code)]++);
+  let h = `<div class="bar" style="margin-top:4px">
+    <strong style="color:var(--ink)">${idx + 1}-р хичээл</strong>
+    <input type="date" id="sDate" value="${esc(s.d || "")}" aria-label="Огноо">
+    <input type="text" id="sTopic" value="${esc(s.t || "")}" placeholder="Сэдэв" style="flex:1;min-width:160px">
+    <button class="btn danger ghost" id="sDel">Хичээл устгах</button></div>
+  <div class="counts">
+    <span class="k-P"><b>${c.P}</b> ирсэн</span><span class="k-L"><b>${c.L}</b> хоцорсон</span>
+    <span class="k-E"><b>${c.E}</b> чөлөөтэй</span><span class="k-A"><b>${c.A}</b> тасалсан</span>
+    <span style="color:var(--muted)"><b>${c[""]}</b> бүртгээгүй</span></div>
+  <div class="bar" style="margin-top:0">
+    <input type="search" id="q" placeholder="Нэр эсвэл кодоор хайх" value="${esc(ui.q)}" class="grow">
+    <button class="btn" id="restP" ${c[""] ? "" : "disabled"}>Бүртгээгүйг «ирсэн» болгох</button>
+    <button class="btn ghost" id="clearS">Цэвэрлэх</button></div>
+  <ul class="roll panel">`;
+  sec.list.forEach((code, i) => {
+    if (!matches(code, ui.q)) return;
+    const m = mark(sec.id, s.id, code), st_ = ST[code];
+    h += `<li data-c="${code}" data-m="${m}"><span class="no">${i + 1}</span><span><span class="nm">${esc(st_.n)}</span><span class="cd">${code} · ${esc(st_.s)}</span></span>
+      <span class="marks">${["P", "L", "E", "A"].map(k => `<button class="mk" data-m="${k}" aria-pressed="${m === k}" title="${MARKS[k].n}">${MARKS[k].l}</button>`).join("")}</span></li>`;
+  });
+  return h + `</ul><p class="note">✓ ирсэн · Х хоцорсон · Ч чөлөөтэй · Т тасалсан. Дахин дарвал тэмдэглэгээ арилна.</p>`;
+}
+function gridHtml(sec, ss) {
+  let h = `<div class="bar" style="margin-top:0"><input type="search" id="q" placeholder="Нэр эсвэл кодоор хайх" value="${esc(ui.q)}" class="grow"><span class="note">Нүдэн дээр дарж солино: хоосон → ✓ → Т → Х → Ч</span></div>
+  <div class="tblwrap"><table><thead><tr><th class="num">№</th><th class="stick">Оюутан</th>` +
+    ss.map((s, i) => `<th class="c" title="${esc(s.t || "")}">${i + 1}<br><span style="font-weight:400;color:var(--muted)">${esc(shortDate(s.d))}</span></th>`).join("") +
+    `<th class="num">Т</th><th class="num">Ирц %</th></tr></thead><tbody>`;
+  sec.list.forEach((code, i) => {
+    if (!matches(code, ui.q)) return;
+    const r = attStats(code, [sec.id]);
+    h += `<tr><td class="num">${i + 1}</td><td class="stick">${esc(ST[code].n)} <span style="color:var(--muted);font-size:12px">${code}</span></td>` +
+      ss.map(s => { const m = mark(sec.id, s.id, code); return `<td class="c"><button class="cell" data-c="${code}" data-s="${s.id}" data-m="${m}" aria-label="${esc(ST[code].n)} ${esc(s.d)}">${m ? MARKS[m].l : ""}</button></td>`; }).join("") +
+      `<td class="num">${r.A || ""}</td><td class="num ${r.rate != null && r.rate < .7 ? "pct-low" : ""}">${pct(r.rate)}</td></tr>`;
+  });
+  return h + `</tbody></table></div>`;
+}
+function setMark(secId, sid, code, m) { patch("att/" + secId, { m: { [sid]: { [code]: m } } }); }
+function bindAtt(sec, ss) {
+  document.getElementById("secSel").onchange = e => { ui.sec = e.target.value; ui.sess = null; ui.q = ""; render(); };
+  main.querySelectorAll(".seg button").forEach(b => b.onclick = () => { ui.view = b.dataset.v; render(); });
+  main.querySelectorAll(".chip[data-s]").forEach(b => b.onclick = () => { ui.sess = b.dataset.s; ui.view = "roll"; render(); });
+  document.getElementById("addSess").onclick = () => { ui.newOpen = !ui.newOpen; render(); if (ui.newOpen) document.getElementById("nsTopic").focus(); };
+  const ns = document.getElementById("nsOk");
+  ns.onclick = () => {
+    const id = "s" + Date.now().toString(36);
+    const d = document.getElementById("nsDate").value || today(), t = document.getElementById("nsTopic").value.trim();
+    patch("att/" + sec.id, { sess: { [id]: { d, t } } });
+    ui.sess = id; ui.view = "roll"; ui.newOpen = false; render(); toast("Хичээл үүслээ");
+  };
+  document.getElementById("nsCancel").onclick = () => { ui.newOpen = false; render(); };
+  const q = document.getElementById("q");
+  if (q) q.oninput = e => { ui.q = e.target.value; const pos = e.target.selectionStart; render(); const nq = document.getElementById("q"); nq.focus(); nq.setSelectionRange(pos, pos); };
+  if (!ss.length) return;
+  if (ui.view === "roll") {
+    const sid = ui.sess;
+    main.querySelectorAll(".roll li").forEach(li => li.querySelectorAll(".mk").forEach(b => b.onclick = () => {
+      const code = li.dataset.c, cur = mark(sec.id, sid, code), m = cur === b.dataset.m ? "" : b.dataset.m;
+      setMark(sec.id, sid, code, m);
+      li.dataset.m = m; li.querySelectorAll(".mk").forEach(x => x.setAttribute("aria-pressed", x.dataset.m === m));
+      updateCounts(sec, sid);
+    }));
+    document.getElementById("sDate").onchange = e => patch("att/" + sec.id, { sess: { [sid]: { d: e.target.value } } });
+    document.getElementById("sTopic").onchange = e => patch("att/" + sec.id, { sess: { [sid]: { t: e.target.value.trim() } } });
+    document.getElementById("sDel").onclick = () => {
+      if (!confirm("Энэ хичээл болон түүний ирцийг устгах уу?")) return;
+      patch("att/" + sec.id, { sess: { [sid]: null }, m: { [sid]: null } }); ui.sess = null; render(); toast("Хичээл устлаа");
+    };
+    document.getElementById("restP").onclick = () => {
+      const p = {}; sec.list.forEach(c => { if (!mark(sec.id, sid, c)) p[c] = "P"; });
+      patch("att/" + sec.id, { m: { [sid]: p } }); render(); toast(Object.keys(p).length + " оюутныг ирсэн болголоо");
+    };
+    document.getElementById("clearS").onclick = () => {
+      if (!confirm("Энэ хичээлийн бүх тэмдэглэгээг арилгах уу?")) return;
+      const p = {}; sec.list.forEach(c => p[c] = ""); patch("att/" + sec.id, { m: { [sid]: p } }); render();
+    };
+  } else {
+    main.querySelectorAll(".cell").forEach(b => b.onclick = () => {
+      const cur = b.dataset.m, m = CYCLE[(CYCLE.indexOf(cur) + 1) % CYCLE.length];
+      setMark(sec.id, b.dataset.s, b.dataset.c, m); b.dataset.m = m; b.textContent = m ? MARKS[m].l : "";
+    });
+  }
+}
+function updateCounts(sec, sid) {
+  const c = { P: 0, A: 0, L: 0, E: 0, "": 0 }; sec.list.forEach(code => c[mark(sec.id, sid, code)]++);
+  const el = main.querySelector(".counts"); if (!el) return;
+  const b = el.querySelectorAll("b"); [c.P, c.L, c.E, c.A, c[""]].forEach((v, i) => b[i].textContent = v);
+  const rp = document.getElementById("restP"); if (rp) rp.disabled = !c[""];
+}
+
+/* ---------- Grades ---------- */
+function gradeList() { return ui.gsec === "all" ? ROSTER.students.map(s => s.c) : (SEC[ui.gsec] || SECS[0]).list; }
+function renderGrades() {
+  const comps = cfg().components, list = gradeList();
+  let h = `<div class="bar"><select id="gsec" aria-label="Анги">${secOptions(ui.gsec, true)}</select>
+    <input type="search" id="gq" placeholder="Нэр эсвэл кодоор хайх" value="${esc(ui.gq)}" class="grow">
+    <button class="btn primary" id="xlsx">Excel татах</button></div>
+  <p class="note" style="margin:-4px 0 10px">Явц ${maxCont()} + шалгалт ${maxAll() - maxCont()} = ${maxAll()} оноо. Саарал «${esc((comps.find(c => c.auto) || {}).name || "")}» нүд ирцээс автоматаар бодогдоно; гараар бичвэл түүнийг дарж, устгавал автомат руу буцна.</p>
+  <div class="tblwrap"><table id="gtbl"><thead><tr><th class="num">№</th><th class="stick">Оюутан</th>` +
+    comps.map(c => `<th class="num">${esc(c.name)}<br><span style="font-weight:400;color:var(--muted)">${c.max}</span></th>`).join("") +
+    `<th class="num">Явц<br><span style="font-weight:400;color:var(--muted)">${maxCont()}</span></th><th class="num">Нийт<br><span style="font-weight:400;color:var(--muted)">${maxAll()}</span></th><th class="c">Үнэлгээ</th></tr></thead><tbody>`;
+  let n = 0;
+  list.forEach((code, i) => {
+    if (!matches(code, ui.gq)) return; n++;
+    h += `<tr data-c="${code}"><td class="num">${i + 1}</td><td class="stick">${esc(ST[code].n)} <span style="color:var(--muted);font-size:12px">${code}</span></td>` +
+      comps.map(c => { const r = compVal(code, c); const cls = r.auto ? "auto" : r.ovr ? "ovr" : "";
+        return `<td class="num"><input class="sc ${cls}" type="number" inputmode="decimal" step="0.5" min="0" max="${c.max}" data-k="${c.id}" value="${fmt(r.v)}" aria-label="${esc(ST[code].n)} ${esc(c.name)}"></td>`; }).join("") +
+      totCells(code) + `</tr>`;
+  });
+  h += `</tbody>${n ? footHtml(list.filter(c => matches(c, ui.gq)), comps) : ""}</table></div>`;
+  if (!n) h += `<div class="empty">Хайлтад тохирох оюутан олдсонгүй.</div>`;
+  main.innerHTML = h;
+  document.getElementById("gsec").onchange = e => { ui.gsec = e.target.value; render(); };
+  document.getElementById("gq").oninput = e => { ui.gq = e.target.value; const pos = e.target.selectionStart; render(); const q = document.getElementById("gq"); q.focus(); q.setSelectionRange(pos, pos); };
+  document.getElementById("xlsx").onclick = exportXlsx;
+  main.querySelectorAll("input.sc").forEach(inp => {
+    inp.onchange = () => {
+      const tr = inp.closest("tr"), code = tr.dataset.c, c = comps.find(x => x.id === inp.dataset.k);
+      let v = inp.value.trim() === "" ? "" : Math.max(0, Math.min(+c.max, +inp.value));
+      if (v !== "" && isNaN(v)) v = "";
+      patch("reg/scores", { s: { [code]: { [c.id]: v } } });
+      const r = compVal(code, c); inp.value = fmt(r.v); inp.className = "sc " + (r.auto ? "auto" : r.ovr ? "ovr" : "");
+      const cells = tr.querySelectorAll("td"); const k = cells.length;
+      const tmp = document.createElement("tr"); tmp.innerHTML = totCells(code);
+      [...tmp.children].forEach((td, j) => cells[k - 3 + j].replaceWith(td));
+    };
+    inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); moveFocus(inp, e.shiftKey ? -1 : 1); } };
+  });
+}
+function moveFocus(inp, dir) {
+  const k = inp.dataset.k, rows = [...main.querySelectorAll("#gtbl tbody tr")], i = rows.indexOf(inp.closest("tr"));
+  const nx = rows[i + dir]; if (nx) { const t = nx.querySelector(`input[data-k="${k}"]`); t.focus(); t.select(); } else inp.blur();
+}
+function totCells(code) {
+  const t = totals(code), em = cfg().examMin;
+  const flag = em > 0 && t.any && t.cont < em ? `<span class="flag">шалгалтад орох эрхгүй</span>` : "";
+  return `<td class="num tot">${t.any ? fmt(t.cont) : ""}${flag}</td><td class="num tot">${t.any ? fmt(t.total) : ""}</td><td class="c">${t.letter ? `<span class="grade g-${t.letter}">${t.letter}</span>` : ""}</td>`;
+}
+function footHtml(list, comps) {
+  const avg = f => { const v = list.map(f).filter(x => x != null); return v.length ? fmt(v.reduce((a, b) => a + b, 0) / v.length) : ""; };
+  return `<tfoot><tr><td></td><td class="stick">Дундаж (${list.length})</td>` + comps.map(c => `<td class="num">${avg(code => compVal(code, c).v)}</td>`).join("") +
+    `<td class="num">${avg(code => totals(code).any ? totals(code).cont : null)}</td><td class="num">${avg(code => totals(code).any ? totals(code).total : null)}</td><td></td></tr></tfoot>`;
+}
+
+/* ---------- Overview ---------- */
+function renderOverview() {
+  let h = `<h2>Ангиуд</h2><div class="grid">`;
+  SECS.forEach(sec => {
+    const ss = sessions(sec.id); let P = 0, L = 0, A = 0;
+    sec.list.forEach(c => ss.forEach(s => { const m = mark(sec.id, s.id, c); if (m === "P") P++; else if (m === "L") L++; else if (m === "A") A++; }));
+    const base = P + L + A, r = base ? (P + L * cfg().lateWeight) / base : null;
+    h += `<div class="panel card"><h3>${esc(sec.name)}</h3><div class="note">${sec.list.length} оюутан · ${ss.length} хичээл</div>
+      <div class="big">${pct(r)}</div><div class="note">дундаж ирц · ${A} тасалсан тохиолдол</div><div class="meter"><i style="width:${r == null ? 0 : Math.round(r * 100)}%"></i></div></div>`;
+  });
+  h += `</div>`;
+  const dist = { A: 0, B: 0, C: 0, D: 0, F: 0 }; let graded = 0;
+  ROSTER.students.forEach(s => { const t = totals(s.c); if (t.any) { graded++; dist[t.letter] = (dist[t.letter] || 0) + 1; } });
+  const mx = Math.max(1, ...Object.values(dist));
+  const col = { A: "var(--P)", B: "var(--accent)", C: "var(--L)", D: "var(--E)", F: "var(--A)" };
+  h += `<h2>Үнэлгээний тархалт</h2><div class="panel">${graded ? `<div class="dist">` + Object.entries(dist).map(([g, v]) => `<div><span>${v}</span><span class="b" style="height:${Math.round(v / mx * 100)}%;background:${col[g] || "var(--muted)"};min-height:${v ? 3 : 0}px"></span><label>${g}</label></div>`).join("") + `</div><p class="note" style="padding:0 18px 12px;margin:0">Оноо орсон ${graded} оюутан (одоогийн оноогоор)</p>` : `<div class="empty">Дүн хэсэгт оноо оруулахад тархалт энд гарна.</div>`}</div>`;
+  const risk = ROSTER.students.map(s => ({ s, r: attStats(s.c) })).filter(x => x.r.A >= 3 || (x.r.rate != null && x.r.rate < .7)).sort((a, b) => b.r.A - a.r.A);
+  h += `<h2>Анхаарах оюутнууд</h2><p class="note" style="margin-top:-6px">3 ба түүнээс дээш тасалсан, эсвэл ирц 70%-иас доош</p>`;
+  if (!risk.length) h += `<div class="panel empty">Одоогоор ийм оюутан алга.</div>`;
+  else h += `<div class="tblwrap"><table><thead><tr><th>Оюутан</th><th>Код</th><th>Анги</th><th class="num">Тасалсан</th><th class="num">Хоцорсон</th><th class="num">Ирц</th></tr></thead><tbody>` +
+    risk.map(({ s, r }) => `<tr><td>${esc(s.n)}</td><td>${s.c}</td><td>${(MEMBERSHIP[s.c] || []).map(id => esc(SEC[id].name)).join(", ")}</td><td class="num">${r.A}</td><td class="num">${r.L}</td><td class="num ${r.rate < .7 ? "pct-low" : ""}">${pct(r.rate)}</td></tr>`).join("") + `</tbody></table></div>`;
+  main.innerHTML = h;
+}
+
+/* ---------- Settings ---------- */
+function renderSettings() {
+  const c = cfg();
+  let h = `<div class="settings"><div class="panel"><h3>Үнэлгээний бүрэлдэхүүн</h3>
+    <p class="note" style="margin-top:0">Нийт ${maxAll()} оноо (явц ${maxCont()}). Нэр, дээд оноог засаж болно.</p><div id="comps">` +
+    c.components.map((x, i) => `<div class="comp" data-i="${i}"><input type="text" value="${esc(x.name)}" data-f="name" aria-label="Нэр"><input type="number" min="0" step="0.5" value="${x.max}" data-f="max" aria-label="Дээд оноо">
+      <span>${x.auto ? `<span class="tag">ирцээс</span>` : x.exam ? `<span class="tag">шалгалт</span>` : `<button class="btn ghost danger" data-del="${i}" title="Устгах">✕</button>`}</span></div>`).join("") +
+    `</div><div class="row"><button class="btn" id="addComp">+ Бүрэлдэхүүн нэмэх</button></div></div>
+  <div class="panel"><h3>Дүрэм</h3>
+    <div class="row"><label>Хоцролтыг ирцэд тооцох жин <select id="lw">${[[1, "бүтэн (1)"], [0.5, "хагас (0.5)"], [0, "тооцохгүй (0)"]].map(([v, t]) => `<option value="${v}"${+c.lateWeight === v ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
+    <div class="row"><label>Шалгалтад орох явцын доод оноо <input type="number" id="em" min="0" step="1" value="${c.examMin || 0}" style="width:80px"></label></div>
+    <p class="note">0 бол шалгахгүй. Чөлөөтэй хичээл ирцийн хувьд тооцогдохгүй.</p>
+    <h3 style="margin-top:16px">Үсгэн үнэлгээний хил</h3><div class="row">` +
+    c.scale.slice(0, -1).map(([g, m], i) => `<label>${g} ≥ <input type="number" data-sc="${i}" value="${m}" style="width:64px"></label>`).join("") + `</div></div>
+  <div class="panel"><h3>Өгөгдөл</h3>
+    <p class="note" style="margin-top:0">${st.db ? "Өгөгдөл claude.ai дээр хадгалагдаж, таны бүх төхөөрөмж дээр ижилхэн харагдана. Зөвхөн та болон засах эрхтэй хүн харна." : "Одоо зөвхөн энэ хөтчид хадгалагдаж байна. Нийтлэгдсэн хуудсаар нээвэл төхөөрөмж хооронд синк хийнэ."}</p>
+    <div class="row"><button class="btn primary" id="xlsx2">Excel татах (дүн + ирц)</button><button class="btn" id="bk">Нөөц хуулбар (.json)</button>
+    <label class="btn" style="display:inline-flex;align-items:center">Нөөцөөс сэргээх<input type="file" id="rs" accept=".json,application/json" hidden></label></div>
+    <div class="row"><button class="btn ghost danger" id="resetCfg">Тохиргоог анхны төлөвт</button></div></div></div>`;
+  main.innerHTML = h;
+  const saveCfg = () => { replaceDoc("reg/config", { config: c }); };
+  main.querySelectorAll(".comp input").forEach(inp => inp.onchange = () => {
+    const x = c.components[+inp.closest(".comp").dataset.i];
+    if (inp.dataset.f === "max") x.max = Math.max(0, +inp.value || 0); else x.name = inp.value.trim() || x.name;
+    saveCfg(); renderSettings();
+  });
+  main.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { const x = c.components[+b.dataset.del]; if (!confirm(`«${x.name}» бүрэлдэхүүнийг устгах уу? Орсон оноо харагдахаа болино.`)) return; c.components.splice(+b.dataset.del, 1); saveCfg(); renderSettings(); });
+  document.getElementById("addComp").onclick = () => { const ei = c.components.findIndex(x => x.exam); const nc = { id: "c" + Date.now().toString(36), name: "Шинэ бүрэлдэхүүн", max: 5 }; if (ei < 0) c.components.push(nc); else c.components.splice(ei, 0, nc); saveCfg(); renderSettings(); };
+  document.getElementById("lw").onchange = e => { c.lateWeight = +e.target.value; saveCfg(); };
+  document.getElementById("em").onchange = e => { c.examMin = Math.max(0, +e.target.value || 0); saveCfg(); };
+  main.querySelectorAll("[data-sc]").forEach(inp => inp.onchange = () => { c.scale[+inp.dataset.sc][1] = +inp.value || 0; saveCfg(); });
+  document.getElementById("xlsx2").onclick = exportXlsx;
+  document.getElementById("bk").onclick = () => saveFile("S.ECM201_нөөц_" + today() + ".json", new Blob([JSON.stringify({ v: 1, at: new Date().toISOString(), docs: D }, null, 1)], { type: "application/json" }));
+  document.getElementById("rs").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { const j = JSON.parse(await f.text()); if (!j.docs) throw 0; if (!confirm("Одоогийн бүх өгөгдлийг нөөцөөр солих уу?")) return;
+      KEYS.forEach(k => { if (j.docs[k]) replaceDoc(k, j.docs[k]); }); toast("Нөөцөөс сэргээлээ"); render();
+    } catch (err) { toast("Файл таарсангүй — энэ системээс авсан .json нөөц сонгоно уу"); }
+  };
+  document.getElementById("resetCfg").onclick = () => { if (!confirm("Бүрэлдэхүүн, дүрмийг анхны төлөвт оруулах уу? Оноо, ирц хэвээр үлдэнэ.")) return; replaceDoc("reg/config", { config: clone(DEFAULT_CONFIG) }); renderSettings(); };
+}
+
+/* ---------- Export ---------- */
+let dl = null;
+function loadXLSX() {
+  return new Promise((res, rej) => { if (window.XLSX) return res(window.XLSX);
+    const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload = () => res(window.XLSX); s.onerror = rej; document.head.appendChild(s); });
+}
+async function saveFile(name, blob) {
+  if (dl === null && window.claude && window.claude.use) { try { dl = await window.claude.use("downloads"); } catch (e) { dl = false; } }
+  if (dl) {
+    try { await dl.save({ filename: name, data: blob }); toast("Файл хадгаллаа"); }
+    catch (e) { if (e && e.code !== "declined") toast("Файл хадгалж чадсангүй"); }
+    return;
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+async function exportXlsx() {
+  toast("Excel бэлдэж байна…");
+  let X; try { X = await loadXLSX(); } catch (e) { toast("Excel сан ачаалагдсангүй — интернэтээ шалгана уу"); return; }
+  const wb = X.utils.book_new(), comps = cfg().components;
+  const list = gradeList();
+  const rows = [["№", "Оюутны код", "Овог нэр", "Сургууль", ...comps.map(c => `${c.name} (${c.max})`), `Явц (${maxCont()})`, `Нийт (${maxAll()})`, "Үнэлгээ", "Ирц %"]];
+  list.forEach((code, i) => { const t = totals(code), r = attStats(code);
+    rows.push([i + 1, code, ST[code].n, ST[code].s, ...comps.map(c => compVal(code, c).v ?? ""), t.any ? t.cont : "", t.any ? t.total : "", t.letter, r.rate == null ? "" : Math.round(r.rate * 100)]); });
+  const ws = X.utils.aoa_to_sheet(rows); ws["!cols"] = [{ wch: 4 }, { wch: 12 }, { wch: 20 }, { wch: 8 }, ...comps.map(() => ({ wch: 10 })), { wch: 9 }, { wch: 9 }, { wch: 8 }, { wch: 7 }];
+  X.utils.book_append_sheet(wb, ws, "Дүн");
+  SECS.forEach(sec => {
+    const ss = sessions(sec.id);
+    const a = [["№", "Оюутны код", "Овог нэр", ...ss.map((s, i) => `${i + 1} (${s.d || ""})`), "Ирсэн", "Хоцорсон", "Чөлөөтэй", "Тасалсан", "Ирц %"]];
+    sec.list.forEach((code, i) => { const r = attStats(code, [sec.id]);
+      a.push([i + 1, code, ST[code].n, ...ss.map(s => { const m = mark(sec.id, s.id, code); return m ? MARKS[m].l : ""; }), r.P, r.L, r.E, r.A, r.rate == null ? "" : Math.round(r.rate * 100)]); });
+    const w = X.utils.aoa_to_sheet(a); w["!cols"] = [{ wch: 4 }, { wch: 12 }, { wch: 20 }];
+    X.utils.book_append_sheet(wb, w, ("Ирц " + sec.name.replace("·", "")).replace(/\s+/g, " ").slice(0, 31));
+  });
+  const buf = X.write(wb, { bookType: "xlsx", type: "array" });
+  saveFile(`S.ECM201_ирц_дүн_${today()}.xlsx`, new Blob([buf]));
+}
+
+/* ---------- theme ---------- */
+(function () {
+  let t = null; try { t = localStorage.getItem(LS + "theme"); } catch (e) { }
+  if (t) document.documentElement.dataset.theme = t;
+  document.getElementById("themeBtn").onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const n = dark ? "light" : "dark"; document.documentElement.dataset.theme = n; try { localStorage.setItem(LS + "theme", n); } catch (e) { }
+  };
+})();
+
+render();
+initDb();
+</script>
+</body>
+</html>
